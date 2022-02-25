@@ -3,10 +3,12 @@ package com.karold.swreportapp.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
+@ToString
 public class Person {
 
     private String name;
@@ -41,6 +43,12 @@ public class Person {
 
     @JsonUnwrapped
     private EntityInfo entityInfo;
+
+    public String getId(){return entityInfo.getIdFromUrl();}
+
+    public String getUrl() {
+        return entityInfo.getUrl();
+    }
 
     public boolean checkIfComeFrom(String planet) {
         if (homeworld != null) {

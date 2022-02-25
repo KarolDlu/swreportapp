@@ -11,4 +11,13 @@ public class EntityInfo {
 
     private String edited;
 
+    public String getIdFromUrl() {
+        String[] parts = url.split("/");
+        if (parts.length >= 6) {
+            return parts[5];
+        }
+        //TODO throw cant get id from url
+        return null;
+    }
+
 }

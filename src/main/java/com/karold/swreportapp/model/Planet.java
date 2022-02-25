@@ -38,4 +38,10 @@ public class Planet {
     @JsonUnwrapped
     private EntityInfo entityInfo;
 
+    public String getId(){return entityInfo.getIdFromUrl();}
+
+    public String getUrl() {
+        return entityInfo.getUrl();
+    }
+
 }
