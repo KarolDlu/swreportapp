@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ReportGenerator {
 
-    Report generateReport(String characterPhrase, String planetName, List<SimpleReportItem> result);
+    Report generateReport(Long id, String characterPhrase, String planetName, List<SimpleReportItem> result);
 }

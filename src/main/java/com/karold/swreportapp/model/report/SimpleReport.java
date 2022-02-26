@@ -3,10 +3,15 @@ package com.karold.swreportapp.model.report;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.List;
 
+@Entity
 @JsonPropertyOrder({
         "report_id",
         "query_criteria_character_phrase",
@@ -15,8 +20,10 @@ import java.util.List;
 })
 @Getter
 @ToString
+@NoArgsConstructor
 public class SimpleReport implements Report {
 
+    @Id
     @JsonProperty("report_id")
     private Long id;
 
@@ -26,9 +33,11 @@ public class SimpleReport implements Report {
     @JsonProperty("query_criteria_planet_name")
     private String planetName;
 
+    @ElementCollection
     private List<SimpleReportItem> result;
 
-    public SimpleReport(String characterPhrase, String planetName, List<SimpleReportItem> result) {
+    public SimpleReport(Long id, String characterPhrase, String planetName, List<SimpleReportItem> result) {
+        this.id = id;
         this.characterPhrase = characterPhrase;
         this.planetName = planetName;
         this.result = result;

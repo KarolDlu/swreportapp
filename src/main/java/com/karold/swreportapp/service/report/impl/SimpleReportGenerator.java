@@ -11,7 +11,8 @@ import java.util.List;
 public class SimpleReportGenerator implements ReportGenerator {
 
     @Override
-    public SimpleReport generateReport(String characterPhrase, String planetName, List<SimpleReportItem> result) {
-        return new SimpleReport(characterPhrase, planetName, result);
+    public SimpleReport generateReport(Long id, String characterPhrase, String planetName, List<SimpleReportItem> result) {
+        return new SimpleReport(id, characterPhrase, planetName, result);
     }
+
 }

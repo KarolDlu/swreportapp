@@ -1,21 +1,33 @@
 package com.karold.swreportapp.model;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor
 @Getter
-@Setter
 public class CommonApiResponse<T> {
 
-    int count;
+    private int count;
 
-    String next;
+    private String next;
 
-    String previous;
+    private String previous;
 
-    List<T> results;
+    private List<T> results;
+
+    @JsonUnwrapped
+    private EntityInfo entityInfo;
+
+    public CommonApiResponse(int count, String next, String previous, List<T> results, EntityInfo entityInfo) {
+        this.count = count;
+        this.next = next;
+        this.previous = previous;
+        this.results = results;
+        this.entityInfo = entityInfo;
+    }
 
     public T getResultIfCountEqualsOne() {
         if (count == 1) {

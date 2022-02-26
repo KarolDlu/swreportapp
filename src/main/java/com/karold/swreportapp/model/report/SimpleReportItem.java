@@ -1,11 +1,12 @@
 package com.karold.swreportapp.model.report;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
-@AllArgsConstructor
+import javax.persistence.Embeddable;
+
+@Embeddable
 @Getter
 @ToString
 public class SimpleReportItem implements ReportItem {
@@ -28,4 +29,15 @@ public class SimpleReportItem implements ReportItem {
     @JsonProperty("planet_name")
     private String planetName;
 
+    public SimpleReportItem() {
+    }
+
+    public SimpleReportItem(String filmId, String filmName, String characterId, String characterName, String planetId, String planetName) {
+        this.filmId = filmId;
+        this.filmName = filmName;
+        this.characterId = characterId;
+        this.characterName = characterName;
+        this.planetId = planetId;
+        this.planetName = planetName;
+    }
 }
