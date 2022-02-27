@@ -16,20 +16,16 @@ public class CustomHttpClient {
         this.baseUrl = baseUrl;
     }
 
-    public HttpResponse<String> get(String endpoint) throws IOException, InterruptedException {
-        return get(endpoint, "");
-    }
-
-    public HttpResponse<String> get(String endpoint, String params) throws IOException, InterruptedException {
+    public HttpResponse<String> get(String resource, String params) throws IOException, InterruptedException { //TODO change endpoint to resource
         return httpClient.send(HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + endpoint + "?" + params))
+                .uri(URI.create(baseUrl + resource + "?" + params))
                 .GET()
                 .build(), HttpResponse.BodyHandlers.ofString());
     }
 
-    public HttpResponse<String> getWithCustomUrl(String url) throws IOException, InterruptedException {
+    public HttpResponse<String> getWithCustomUrl(String uri) throws IOException, InterruptedException {
         return httpClient.send(HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(URI.create(uri))
                 .GET()
                 .build(), HttpResponse.BodyHandlers.ofString());
     }

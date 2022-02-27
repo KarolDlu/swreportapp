@@ -1,12 +1,14 @@
 package com.karold.swreportapp.model;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class CommonApiResponse<T> {
 
@@ -20,14 +22,6 @@ public class CommonApiResponse<T> {
 
     @JsonUnwrapped
     private EntityInfo entityInfo;
-
-    public CommonApiResponse(int count, String next, String previous, List<T> results, EntityInfo entityInfo) {
-        this.count = count;
-        this.next = next;
-        this.previous = previous;
-        this.results = results;
-        this.entityInfo = entityInfo;
-    }
 
     public T getResultIfCountEqualsOne() {
         if (count == 1) {

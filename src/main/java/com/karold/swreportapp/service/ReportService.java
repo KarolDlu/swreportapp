@@ -1,4 +1,4 @@
-package com.karold.swreportapp.service.report;
+package com.karold.swreportapp.service;
 
 import com.karold.swreportapp.model.report.Report;
 
