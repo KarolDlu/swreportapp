@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @Embeddable
 @ToString
@@ -32,4 +33,17 @@ public class ReportItem {
 
     @JsonProperty("planet_name")
     private String planetName;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReportItem that = (ReportItem) o;
+        return Objects.equals(filmId, that.filmId) && Objects.equals(filmName, that.filmName) && Objects.equals(characterId, that.characterId) && Objects.equals(characterName, that.characterName) && Objects.equals(planetId, that.planetId) && Objects.equals(planetName, that.planetName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(filmId, filmName, characterId, characterName, planetId, planetName);
+    }
 }

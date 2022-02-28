@@ -1,13 +1,12 @@
 package com.karold.swreportapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.karold.swreportapp.exception.TooManyResultsException;
+import com.karold.swreportapp.exception.ResultsCountNotEqualsOneException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,18 +18,13 @@ public class CommonApiResponse<T> {
 
     private String next;
 
-    private String previous;
-
     private List<T> results;
 
-    public Optional<T> getResultIfCountEqualsOne() {
+    public T getResultIfCountEqualsOne() {
         if (count == 1) {
-            return Optional.of(results.get(0));
-        } else if (count > 1) {
-            throw new TooManyResultsException(results.get(0).getClass().getSimpleName());
+            return results.get(0);
         } else {
-            return Optional.empty();
+            throw new ResultsCountNotEqualsOneException();
         }
     }
-
 }

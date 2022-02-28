@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,7 @@ public class SWApiService {
         try {
             return objectMapper.readValue(response, Film.class);
         } catch (Exception e) {
-            throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+            throw new JsonToObjectMappingException(response, CommonApiResponse.class, e);
         }
     }
 
@@ -47,9 +46,9 @@ public class SWApiService {
             result = objectMapper.readValue(response, new TypeReference<>() {
             });
         } catch (Exception e) {
-            throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+            throw new JsonToObjectMappingException(response, CommonApiResponse.class, e);
         }
-        return result.getResultIfCountEqualsOne().orElseThrow(() -> new ResourceNotFoundException("Planet", name));
+        return result.getResultIfCountEqualsOne();
     }
 
 
@@ -65,16 +64,15 @@ public class SWApiService {
     }
 
     private List<Person> getAllPersonsByPhrase(String params) {
-
         String response = httpClient.get(PERSON_RESOURCE, params);
-        CommonApiResponse<LinkedHashMap<String, Object>> responseBody;
+        CommonApiResponse<Person> responseBody;
         try {
             responseBody = objectMapper.readValue(response, new TypeReference<>() {
             });
         } catch (Exception e) {
-            throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+            throw new JsonToObjectMappingException(response, CommonApiResponse.class, e);
         }
-        List<LinkedHashMap<String, Object>> results = new ArrayList<>(responseBody.getResults());
+        List<Person> results = new ArrayList<>(responseBody.getResults());
 
         while (responseBody.getNext() != null) {
             response = httpClient.getWithCustomUrl(responseBody.getNext());
@@ -82,7 +80,7 @@ public class SWApiService {
                 responseBody = objectMapper.readValue(response, new TypeReference<>() {
                 });
             } catch (Exception e) {
-                throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+                throw new JsonToObjectMappingException(response, CommonApiResponse.class, e);
             }
             results.addAll(responseBody.getResults());
         }

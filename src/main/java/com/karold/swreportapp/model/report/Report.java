@@ -10,6 +10,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @JsonPropertyOrder({
@@ -41,5 +42,18 @@ public class Report {
         this.characterPhrase = characterPhrase;
         this.planetName = planetName;
         this.result = result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Report report = (Report) o;
+        return Objects.equals(id, report.id) && Objects.equals(characterPhrase, report.characterPhrase) && Objects.equals(planetName, report.planetName) && Objects.equals(result, report.result);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, characterPhrase, planetName, result);
     }
 }

@@ -25,7 +25,7 @@ public class CustomHttpClient {
                     .build(),
                     HttpResponse.BodyHandlers.ofString()).body();
         } catch (Exception e) {
-            throw new SwApiRequestException(e.getMessage());
+            throw new SwApiRequestException(e.getMessage(), e);
         }
     }
 
@@ -36,7 +36,7 @@ public class CustomHttpClient {
                     .GET()
                     .build(), HttpResponse.BodyHandlers.ofString()).body();
         } catch (Exception e) {
-            throw new SwApiRequestException(e.getMessage());
+            throw new SwApiRequestException(e.getMessage(), e);
         }
     }
 
