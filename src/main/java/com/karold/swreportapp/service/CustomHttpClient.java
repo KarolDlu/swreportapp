@@ -1,6 +1,7 @@
 package com.karold.swreportapp.service;
 
-import java.io.IOException;
+import com.karold.swreportapp.exception.SwApiRequestException;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -16,18 +17,27 @@ public class CustomHttpClient {
         this.baseUrl = baseUrl;
     }
 
-    public HttpResponse<String> get(String resource, String params) throws IOException, InterruptedException { //TODO change endpoint to resource
-        return httpClient.send(HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + resource + "?" + params))
-                .GET()
-                .build(), HttpResponse.BodyHandlers.ofString());
+    public String get(String resource, String params) {
+        try {
+            return httpClient.send(HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + resource + "?" + params))
+                    .GET()
+                    .build(),
+                    HttpResponse.BodyHandlers.ofString()).body();
+        } catch (Exception e) {
+            throw new SwApiRequestException(e.getMessage());
+        }
     }
 
-    public HttpResponse<String> getWithCustomUrl(String uri) throws IOException, InterruptedException {
-        return httpClient.send(HttpRequest.newBuilder()
-                .uri(URI.create(uri))
-                .GET()
-                .build(), HttpResponse.BodyHandlers.ofString());
+    public String getWithCustomUrl(String uri) {
+        try {
+            return httpClient.send(HttpRequest.newBuilder()
+                    .uri(URI.create(uri))
+                    .GET()
+                    .build(), HttpResponse.BodyHandlers.ofString()).body();
+        } catch (Exception e) {
+            throw new SwApiRequestException(e.getMessage());
+        }
     }
 
 }

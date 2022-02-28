@@ -1,33 +1,34 @@
 package com.karold.swreportapp.service.impl;
 
+import com.karold.swreportapp.exception.ResourceNotFoundException;
 import com.karold.swreportapp.model.Film;
 import com.karold.swreportapp.model.Person;
 import com.karold.swreportapp.model.Planet;
 import com.karold.swreportapp.model.report.Report;
 import com.karold.swreportapp.model.report.ReportItem;
-import com.karold.swreportapp.repository.SimpleReportRepo;
+import com.karold.swreportapp.repository.ReportRepo;
+import com.karold.swreportapp.service.ReportService;
 import com.karold.swreportapp.service.SWApiService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional
-public class ReportServiceImpl {  //TODO when error handling will be added include implements ReportService
+public class ReportServiceImpl implements ReportService {
 
     private final SWApiService apiService;
 
-    private final SimpleReportRepo reportRepo;
+    private final ReportRepo reportRepo;
 
-    public ReportServiceImpl(SWApiService apiService, SimpleReportRepo reportRepo) {
+    public ReportServiceImpl(SWApiService apiService, ReportRepo reportRepo) {
         this.apiService = apiService;
         this.reportRepo = reportRepo;
     }
 
-    public void createOrUpdate(Long id, String searchPhrase, String planetName) throws IOException, InterruptedException {
+    public void createOrUpdate(Long id, String searchPhrase, String planetName) {
         List<ReportItem> result = new ArrayList<>();
 
         Planet planet = apiService.getPlanetByName(planetName);
@@ -44,16 +45,16 @@ public class ReportServiceImpl {  //TODO when error handling will be added inclu
         reportRepo.save(report);
     }
 
-    public Report getReportById(Long id) throws Exception {
-        return reportRepo.findById(id).orElseThrow(Exception::new); //TODO throw custom error
+    public Report getReportById(Long id) {
+        return reportRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Report", id));
     }
 
     public List<Report> getAllReports() {
         return reportRepo.findAll();
     }
 
-    public void deleteReportById(Long id) throws Exception {
-        Report report = reportRepo.findById(id).orElseThrow((Exception::new)); // TODO throw custom error
+    public void deleteReportById(Long id) {
+        Report report = reportRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Report", id));
         reportRepo.delete(report);
     }
 

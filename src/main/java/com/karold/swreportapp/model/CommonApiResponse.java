@@ -1,15 +1,18 @@
 package com.karold.swreportapp.model;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.karold.swreportapp.exception.TooManyResultsException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CommonApiResponse<T> {
 
     private int count;
@@ -20,18 +23,13 @@ public class CommonApiResponse<T> {
 
     private List<T> results;
 
-    @JsonUnwrapped
-    private EntityInfo entityInfo;
-
-    public T getResultIfCountEqualsOne() {
+    public Optional<T> getResultIfCountEqualsOne() {
         if (count == 1) {
-            return results.get(0);
+            return Optional.of(results.get(0));
         } else if (count > 1) {
-            //TODO throw to many results
-            return null;
+            throw new TooManyResultsException(results.get(0).getClass().getSimpleName());
         } else {
-            //TODO throw planet not found
-            return null;
+            return Optional.empty();
         }
     }
 

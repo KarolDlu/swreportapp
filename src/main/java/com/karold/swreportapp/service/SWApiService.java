@@ -2,6 +2,8 @@ package com.karold.swreportapp.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.karold.swreportapp.exception.JsonToObjectMappingException;
+import com.karold.swreportapp.exception.ResourceNotFoundException;
 import com.karold.swreportapp.model.CommonApiResponse;
 import com.karold.swreportapp.model.Film;
 import com.karold.swreportapp.model.Person;
@@ -9,8 +11,6 @@ import com.karold.swreportapp.model.Planet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,42 +31,59 @@ public class SWApiService {
         this.objectMapper = new ObjectMapper();
     }
 
-    public Film getFilm(String url) throws IOException, InterruptedException {
-        HttpResponse<String> response = httpClient.getWithCustomUrl(url);
-        return objectMapper.readValue(response.body(), Film.class);
-
+    public Film getFilm(String url) {
+        String response = httpClient.getWithCustomUrl(url);
+        try {
+            return objectMapper.readValue(response, Film.class);
+        } catch (Exception e) {
+            throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+        }
     }
 
-    public Planet getPlanetByName(String name) throws IOException, InterruptedException {
-        HttpResponse<String> response = httpClient.get(PLANET_RESOURCE, "search=" + name);
-        CommonApiResponse<Planet> result = objectMapper.readValue(response.body(), new TypeReference<>() {
-        });
-        return result.getResultIfCountEqualsOne();
+    public Planet getPlanetByName(String name) {
+        String response = httpClient.get(PLANET_RESOURCE, "search=" + name);
+        CommonApiResponse<Planet> result;
+        try {
+            result = objectMapper.readValue(response, new TypeReference<>() {
+            });
+        } catch (Exception e) {
+            throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+        }
+        return result.getResultIfCountEqualsOne().orElseThrow(() -> new ResourceNotFoundException("Planet", name));
     }
 
-    public List<Person> searchPersonByName(String phrase) throws IOException, InterruptedException {
-        return getAllPersonsByPhrase("search=" + phrase);
-    }
 
-
-    public List<Person> searchPersonByPhraseAndHomeWorld(String phrase, String planetUrl) throws IOException, InterruptedException {
+    public List<Person> searchPersonByPhraseAndHomeWorld(String phrase, String planetUrl) {
         List<Person> personList = searchPersonByName(phrase);
         return personList.stream()
                 .filter(person -> person.checkIfComeFrom(planetUrl))
                 .collect(Collectors.toList());
     }
 
-    private List<Person> getAllPersonsByPhrase(String params) throws IOException, InterruptedException {
+    private List<Person> searchPersonByName(String phrase) {
+        return getAllPersonsByPhrase("search=" + phrase);
+    }
 
-        HttpResponse<String> response = httpClient.get(PERSON_RESOURCE, params);
-        CommonApiResponse<LinkedHashMap<String, String>> responseBody = objectMapper.readValue(response.body(), new TypeReference<>() {
-        });
-        List<LinkedHashMap<String, String>> results = new ArrayList<>(responseBody.getResults());
+    private List<Person> getAllPersonsByPhrase(String params) {
+
+        String response = httpClient.get(PERSON_RESOURCE, params);
+        CommonApiResponse<LinkedHashMap<String, Object>> responseBody;
+        try {
+            responseBody = objectMapper.readValue(response, new TypeReference<>() {
+            });
+        } catch (Exception e) {
+            throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+        }
+        List<LinkedHashMap<String, Object>> results = new ArrayList<>(responseBody.getResults());
 
         while (responseBody.getNext() != null) {
             response = httpClient.getWithCustomUrl(responseBody.getNext());
-            responseBody = objectMapper.readValue(response.body(), new TypeReference<>() {
-            });
+            try {
+                responseBody = objectMapper.readValue(response, new TypeReference<>() {
+                });
+            } catch (Exception e) {
+                throw new JsonToObjectMappingException(response, CommonApiResponse.class);
+            }
             results.addAll(responseBody.getResults());
         }
         return objectMapper.convertValue(results, new TypeReference<>() {
